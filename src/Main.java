@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+
 
 public class Main {
 
@@ -8,7 +10,16 @@ public class Main {
 		Server server = new Server();
 		Thread serverThread = new Thread(server);
 		
-		Logger logger = new Logger();
+		try
+		{
+			Logger logger = new Logger(false);			
+		}
+		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+			System.out.println("log file creation failed, exiting");
+			return;
+		}
 		
 
 	}
