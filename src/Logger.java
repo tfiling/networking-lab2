@@ -34,14 +34,15 @@ public class Logger {
 	private Logger() throws FileNotFoundException
 	{
 		String date = getCurrentTime();
+		//path of new log file: pwd(absolute path)\log\<date+time>.txt
 		String logName = Paths.get(".").toAbsolutePath().normalize().toString() + "\\log\\" + date + ".txt";
 		this.logWriter = new PrintWriter(new FileOutputStream(logName), true);
 	}
 	
-	public void printLogMessage(String message)
+	public void printLogMessage(String sender, String message)
 	{
 		String date = getCurrentTime();
-		String newLogMessage = date + ": " + message; 
+		String newLogMessage = "<" + date + ">\n" + sender + ": " + message + "\n"; 
 		if (!logEnabled)
 		{
 			System.out.println(newLogMessage);
@@ -49,6 +50,22 @@ public class Logger {
 		else
 		{			
 			logWriter.println(newLogMessage); 
+		}	
+	}
+	
+	public void printLogMessage(String sender, Exception e)
+	{
+		String date = getCurrentTime();
+		String newLogMessage = "<" + date + ">\n" + sender + ":\n";
+		if (!logEnabled)
+		{//logger not enabled -> print to console
+			System.out.println(newLogMessage);
+			e.printStackTrace();
+		}
+		else
+		{//logger enabled -> print to log file
+			logWriter.println(newLogMessage);
+			e.printStackTrace(logWriter);
 		}
 		
 	}

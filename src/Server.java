@@ -19,10 +19,11 @@ public class Server implements Runnable {
 	{
 		try
 		{
-			Logger.logEnabled = false;
+			//true -> print to log file, false -> print to console(for debugging proposes)
+			Logger.logEnabled = false;//TODO change to true for real world operation
 			this.logger = Logger.getLoggerInstance();
 			createServerSocket();
-			this.publisher = new ServerPublisher(this, this.port);
+			this.publisher = new ServerPublisher(this);
 		}
 		catch(FileNotFoundException e)
 		{
