@@ -1,6 +1,6 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 
 
 
@@ -9,18 +9,38 @@ public class Server implements Runnable {
 	
 	private ServerSocket serverSocket;
 	private Socket socket;
-	private Logger logger;
+	private ServerPublisher publisher;
 	private int port = 6000;
+	private boolean available = true;
 	
-	public Server(Logger logger)
+	private Logger logger;
+	
+	public Server()
 	{
-		this.logger = logger;
+		try
+		{
+			Logger.logEnabled = false;
+			this.logger = Logger.getLoggerInstance();
+			createServerSocket();
+			this.publisher = new ServerPublisher(this, this.port);
+		}
+		catch(FileNotFoundException e)
+		{
+			e.printStackTrace();
+			System.out.println("could not get logger instance");
+		}
 	}
 
 	@Override
 	public void run() {
-		//TODO
-		
+		Thread publisherthread = new Thread(this.publisher);
+		publisherthread.start();
+		try {
+			Thread.sleep(10000);//sleep for 10 secs for publisher testing
+			return;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 		
 	private void createServerSocket()
@@ -37,6 +57,7 @@ public class Server implements Runnable {
 		if (port > 7000)
 		{
 			this.serverSocket = null;
+			//TODO stop program
 		}
 	}
 
@@ -44,5 +65,10 @@ public class Server implements Runnable {
 	{
 		//TODO
 		return false;
+	}
+	
+	public int getPort()
+	{
+		return this.port;
 	}
 }

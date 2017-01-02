@@ -4,15 +4,17 @@ import java.io.FileNotFoundException;
 public class Main {
 
 	public static void main(String[] args) {
-		Client client = new Client();
-		Thread clientThread = new Thread(client);
-		
-		Server server = new Server();
-		Thread serverThread = new Thread(server);
 		
 		try
 		{
-			Logger logger = new Logger(false);			
+			Logger logger = Logger.getLoggerInstance();
+			
+			Client client = new Client();
+			Thread clientThread = new Thread(client);
+			
+			Server server = new Server();
+			Thread serverThread = new Thread(server);
+			serverThread.start();
 		}
 		catch (FileNotFoundException e)
 		{
