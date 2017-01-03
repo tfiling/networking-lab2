@@ -12,6 +12,13 @@ public class Logger {
 	private PrintWriter logWriter;
 	private static Logger instance = null;
 	
+	public static enum LogLevel
+	{
+		NOTE,		
+		IMPORTANT,
+		ERROR		//for exceptions
+	}
+	
 	public static Logger getLoggerInstance(boolean logEnabled) throws FileNotFoundException
 	{
 		if (instance == null)
@@ -39,16 +46,34 @@ public class Logger {
 		this.logWriter = new PrintWriter(new FileOutputStream(logName), true);
 	}
 	
-	public void printLogMessage(String sender, String message)
+	public void printLogMessage(String sender, String message, LogLevel level)
 	{
 		String date = getCurrentTime();
-		String newLogMessage = "<" + date + ">\n" + sender + ": " + message + "\n"; 
-		if (!logEnabled)
+		String stringLevel = "";
+		switch (level)
 		{
+		case NOTE:
+			stringLevel = "NOTE";
+			break;
+		case IMPORTANT:
+			stringLevel = "IMPORTANT";
+			break;
+		case ERROR:
+			stringLevel = "ERROR";
+			break;
+
+		default:
+			stringLevel = "NOTE";
+			break;
+		}	
+		String newLogMessage = "<" + date + ">" + stringLevel + "\n" + sender + ": " + message + "\n"; 
+		if (!logEnabled)
+		{//logger not enabled -> print to console
 			System.out.println(newLogMessage);
 		}
 		else
-		{			
+		{//logger enabled -> print to log file and console
+			System.out.println(newLogMessage);
 			logWriter.println(newLogMessage); 
 		}	
 	}
@@ -56,14 +81,16 @@ public class Logger {
 	public void printLogMessage(String sender, Exception e)
 	{
 		String date = getCurrentTime();
-		String newLogMessage = "<" + date + ">\n" + sender + ":\n";
+		String newLogMessage = "<" + date + ">CRITICAL\n" + sender + ":\n";
 		if (!logEnabled)
 		{//logger not enabled -> print to console
 			System.out.println(newLogMessage);
 			e.printStackTrace();
 		}
 		else
-		{//logger enabled -> print to log file
+		{//logger enabled -> print to log file and console
+			System.out.println(newLogMessage);
+			e.printStackTrace();
 			logWriter.println(newLogMessage);
 			e.printStackTrace(logWriter);
 		}

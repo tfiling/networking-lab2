@@ -39,7 +39,7 @@ public class ServerPublisher implements Runnable {
 			InetAddress address = InetAddress.getByName(ServerPublisher.BROADCAST_HOST);
 			//the required string in the udp datagram mentioned on the instructions
 			String requiredString = "Networking17";
-			String port = Integer.toString(this.server.getPort());
+			String port = Integer.toString(this.server.getTcpPort());
 			//concatenation of port and required string
 			String request = port + requiredString;
 			byte[] temp = request.getBytes();
