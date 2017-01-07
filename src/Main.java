@@ -1,8 +1,17 @@
 import java.io.FileNotFoundException;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Main.
+ */
 public class Main {
 
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(String[] args) {
 		
 		try
@@ -15,7 +24,7 @@ public class Main {
 			
 			Server server = new Server(client);
 			Thread serverThread = new Thread(server);
-			serverThread.start();//the server will create a publisher and wait for a client connection
+			//serverThread.start();//the server will create a publisher and wait for a client connection
 		}
 		catch (FileNotFoundException e)
 		{

@@ -11,33 +11,55 @@ import java.util.Random;
 
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Server.
+ */
 public class Server implements Runnable {
 
+	/** The server socket - used for creating a socket for client connection. */
 	//server socket that accepts tcp connections from clients
 	private ServerSocket serverSocket;
 
+	/** The socket for a client connection. */
 	//the socket for the tcp connection with the client
 	private Socket socket;
 
+	/** The publisher. */
 	//the publisher which will publish the tcp connection over udp broadcast requests
 	private ServerPublisher publisher;
 
+	/** The Tcp port the server listens on. */
 	//the member which will hold the port for the client tcp connections
 	private int TcpPort = 6000;
 
 	//true when the server waits for a client connection. 
+	/** true when the server waits for a client connection. 
+	 * will become true when the server is fully initialized and false when a client connection was created*/
 	//will become true when the server is fully initialized and false when a client connection was created 
 	private boolean available = false;
 
+	/** The logger. */
 	private Logger logger;
 
+	/** The client module that sends messages to its remote server. */
 	//a client instance which will receive input from the server
 	private Client client;
 
+	/** The Constant className. */
 	public static final String className = "Server";
-	public static final int firstReadableChar = 33;//this is the value of the first readable char on the ascii table
-	public static final int readableCharCount = 93;//how many readable chars for the random char replacement
+	
+	/** this is the value of the first readable char on the ascii table. */
+	public static final int firstReadableChar = 33;
+	
+	/** how many readable chars for the random char replacement. */
+	public static final int readableCharCount = 93;
 
+	/**
+	 * Instantiates a new server.
+	 *
+	 * @param client the client
+	 */
 	public Server(Client client)
 	{
 		try
@@ -56,6 +78,9 @@ public class Server implements Runnable {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
 		Thread publisherthread = new Thread(this.publisher);
@@ -102,6 +127,13 @@ public class Server implements Runnable {
 
 	}
 
+	/**
+	 * Replace random char in the message received from the remote client.
+	 *
+	 * @param clientInput the remote client input
+	 * @param clientInputLength the remote client input length
+	 * @return the new "disturbed" message
+	 */
 	private String replaceRandomChar(String clientInput, int clientInputLength) 
 	{
 		String newString;
@@ -127,6 +159,9 @@ public class Server implements Runnable {
 		return newString;
 	}
 
+	/**
+	 * Creates the server socket - finds an available port .
+	 */
 	private void createServerSocket()
 	{
 		while (TcpPort <= 7000)
@@ -146,16 +181,33 @@ public class Server implements Runnable {
 		}
 	}
 
+	/**
+	 * Checks if the server waits for remote client connection.
+	 *
+	 * @return 
+	 */
 	public boolean isServerAvailable()
 	{
 		return this.available;
 	}
 
+	/**
+	 * Gets the tcp port.
+	 *
+	 * @return the tcp port
+	 */
 	public int getTcpPort()
 	{
 		return this.TcpPort;
 	}
 	
+	/**
+	 * Prints the log message.
+	 *
+	 * @param sender the sender
+	 * @param message the message
+	 * @param level the level
+	 */
 	private void printLogMessage(String sender, String message, LogLevel level)
 	{
 		if (this.logger != null)
@@ -164,6 +216,12 @@ public class Server implements Runnable {
 		}
 	}
 	
+	/**
+	 * Prints the log message.
+	 *
+	 * @param sender the sender
+	 * @param e the e
+	 */
 	private void printLogMessage(String sender, Exception e)
 	{
 		if (this.logger != null)

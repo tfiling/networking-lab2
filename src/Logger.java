@@ -6,13 +6,29 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Logger.
+ */
 public class Logger {
 	
+	/** The log enabled - if false will not print to file. */
 	public static boolean logEnabled = false;
+	
+	/** The log writer. */
 	private PrintWriter logWriter;
+	
+	/** The singleton instance. */
 	private static Logger instance = null;
 	
 	
+	/**
+	 * Gets the logger singleton instance.
+	 *
+	 * @param logEnabled the log enabled
+	 * @return the logger instance
+	 * @throws FileNotFoundException the file not found exception
+	 */
 	public static Logger getLoggerInstance(boolean logEnabled) throws FileNotFoundException
 	{
 		if (instance == null)
@@ -23,6 +39,12 @@ public class Logger {
 		return instance;
 	}
 	
+	/**
+	 * Gets the logger singleton instance.
+	 *
+	 * @return the logger instance
+	 * @throws FileNotFoundException the file not found exception
+	 */
 	public static Logger getLoggerInstance() throws FileNotFoundException
 	{
 		if (instance == null)
@@ -32,6 +54,11 @@ public class Logger {
 		return instance;
 	}
 	
+	/**
+	 * Instantiates a new logger.
+	 *
+	 * @throws FileNotFoundException the file not found exception
+	 */
 	private Logger() throws FileNotFoundException
 	{
 		String date = getCurrentTime();
@@ -40,6 +67,13 @@ public class Logger {
 		this.logWriter = new PrintWriter(new FileOutputStream(logName), true);
 	}
 	
+	/**
+	 * Prints the log message.
+	 *
+	 * @param sender the sender
+	 * @param message the message
+	 * @param level the level
+	 */
 	public void printLogMessage(String sender, String message, LogLevel level)
 	{
 		String date = getCurrentTime();
@@ -72,6 +106,12 @@ public class Logger {
 		}	
 	}
 	
+	/**
+	 * Prints the log message.
+	 *
+	 * @param sender the sender
+	 * @param e the e
+	 */
 	public void printLogMessage(String sender, Exception e)
 	{
 		String date = getCurrentTime();
@@ -91,6 +131,11 @@ public class Logger {
 		
 	}
 	
+	/**
+	 * Gets the current time by yyyy-MM-dd_HH-mm-ss format.
+	 *
+	 * @return the current time
+	 */
 	private String getCurrentTime()
 	{
 		return new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());

@@ -4,17 +4,34 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
+/**
+ * The Class ServerPublisher.
+ */
 public class ServerPublisher implements Runnable {
-	
+
+	/** The server. */
 	private Server server;			//the server which is being published	
+	
+	/** The logger. */
 	private Logger logger;			//the logger
+	
+	/** The socket. */
 	private DatagramSocket socket;	//the UDP datagram which will be transmitted until the server found a client 
-	
+
+	/** The udp port. */
 	public static int UDP_PORT = 6000;
+	
+	/** The broadcast host. */
 	public static String BROADCAST_HOST = "132.72.255.255";//TODO find the correct address for broadcast publishing
-	
+
+	/** The class name. */
 	private static String className = "ServerPublisher";
-	
+
+	/**
+	 * Instantiates a new server publisher.
+	 *
+	 * @param server the server
+	 */
 	public ServerPublisher(Server server)
 	{
 		this.server = server;
@@ -28,70 +45,25 @@ public class ServerPublisher implements Runnable {
 			System.out.println("could not get logger instance");
 		}
 	}
-	
 
+
+	/* (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
-		
-		try 
-		{
-			//the address instance of the broadcast address
-			InetAddress address = InetAddress.getByName(ServerPublisher.BROADCAST_HOST);
-			//the required string in the udp datagram mentioned on the instructions
-			String requiredString = "Networking17";
-			String port = Integer.toString(this.server.getTcpPort());
-			//concatenation of port and required string
-			String request = port + requiredString;
-			byte[] temp = request.getBytes();
-			//allocate the byte array which will be sent as the udp datagram's data
-			byte[] requestBytes = new byte[20];
-			//copy the prefix pf the data
-			for (int i = 0; i < 16; i++)
-			{
-				requestBytes[i] = temp[i];
-			}
-			
-			Integer randomInteger = new Integer(new Random().nextInt());
-			//copy the random integer to the end of the udp datagram's data
-			byte[] randomIntegerBytes = ByteBuffer.allocate(4).putInt(randomInteger).array(); 
-			requestBytes[16] = randomIntegerBytes[0];
-			requestBytes[17] = randomIntegerBytes[1];
-			requestBytes[18] = randomIntegerBytes[2];
-			requestBytes[19] = randomIntegerBytes[3];
-			
-			//assembly all the above properties to udp datagram 
-			DatagramPacket dp = new DatagramPacket(requestBytes, requestBytes.length, address, ServerPublisher.UDP_PORT);
-			printLogMessage(className, "created UDP broadcast datagram", LogLevel.NOTE);
-			//create socket for sending the datagram
-			this.socket = new DatagramSocket(ServerPublisher.UDP_PORT);
-			printLogMessage(className, "created socket for sending request message", LogLevel.NOTE);
-			
-			while(this.server.isServerAvailable())
-			{
-				try
-				{//send UDP datagram request
-					this.socket.send(dp);
-					printLogMessage(className, "sent request message", LogLevel.NOTE);
-					Thread.sleep(1000);
-				}
-				catch(InterruptedException e)
-				{//TODO
-					printLogMessage(className, e);
-				}
-			}
-			
-		} catch (UnknownHostException e) 
-		{
-			printLogMessage(className, e);
-		} catch (SocketException e)
-		{
-			printLogMessage(className, e);
-		} catch (IOException e)
-		{
-			printLogMessage(className, e);
-		}		
+		//TODO
+		System.out.println();
+
 	}
-	
+
+	/**
+	 * Prints the log message.
+	 *
+	 * @param sender the sender
+	 * @param message the message
+	 * @param level the level
+	 */
 	private void printLogMessage(String sender, String message, LogLevel level)
 	{
 		if (this.logger != null)
@@ -99,7 +71,13 @@ public class ServerPublisher implements Runnable {
 			this.logger.printLogMessage(sender, message, level);
 		}
 	}
-	
+
+	/**
+	 * Prints the log message.
+	 *
+	 * @param sender the sender
+	 * @param e the e
+	 */
 	private void printLogMessage(String sender, Exception e)
 	{
 		if (this.logger != null)
