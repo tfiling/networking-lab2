@@ -5,8 +5,6 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
-// TODO: Auto-generated Javadoc
 /**
  * The Class Logger.
  */
@@ -74,7 +72,7 @@ public class Logger {
 	 * @param message the message
 	 * @param level the level
 	 */
-	public void printLogMessage(String sender, String message, LogLevel level)
+	public synchronized void printLogMessage(String sender, String message, LogLevel level)
 	{
 		String date = getCurrentTime();
 		String stringLevel = "";
@@ -112,7 +110,7 @@ public class Logger {
 	 * @param sender the sender
 	 * @param e the e
 	 */
-	public void printLogMessage(String sender, Exception e)
+	public synchronized void printLogMessage(String sender, Exception e)
 	{
 		String date = getCurrentTime();
 		String newLogMessage = "<" + date + ">CRITICAL\n" + sender + ":\n";
@@ -136,7 +134,7 @@ public class Logger {
 	 *
 	 * @return the current time
 	 */
-	private String getCurrentTime()
+	private synchronized String getCurrentTime()
 	{
 		return new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
 	}

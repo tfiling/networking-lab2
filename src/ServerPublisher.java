@@ -22,7 +22,7 @@ public class ServerPublisher implements Runnable {
 	public static int UDP_PORT = 6000;
 	
 	/** The broadcast host. */
-	public static String BROADCAST_HOST = "132.72.255.255";//TODO find the correct address for broadcast publishing
+	public static String BROADCAST_HOST = "255.255.255.255";//TODO find the correct address for broadcast publishing
 
 	/** The class name. */
 	private static String className = "ServerPublisher";

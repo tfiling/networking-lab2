@@ -6,7 +6,6 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Client.
  */
@@ -22,10 +21,10 @@ public class Client implements Runnable {
 	public static String BROADCAST_HOST = "255.255.255.255";//TODO find the correct address for broadcast publishing
 	
 	/** The request packet size. */
-	public static int requestPacketSize = 20;
+	public static final int requestPacketSize = 20;
 	
 	/** The offer packet size. */
-	public static int offerPacketSize = 26;
+	public static final int offerPacketSize = 26;
 
 	/** indicates wheather the client is connected to a server. */
 	private boolean isConnected;
@@ -202,7 +201,7 @@ public class Client implements Runnable {
 	 * @return true, if is connected to server
 	 */
 	public boolean isConnected()
-	{//TODO is this needed?
+	{
 		return this.isConnected;
 	}
 

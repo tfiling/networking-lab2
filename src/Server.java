@@ -6,12 +6,6 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Random;
 
-
-
-
-
-
-// TODO: Auto-generated Javadoc
 /**
  * The Class Server.
  */
@@ -65,7 +59,6 @@ public class Server implements Runnable {
 		try
 		{
 			//true -> print to log file, false -> print to console(for debugging proposes)
-			Logger.logEnabled = false;//TODO change to true for real world operation
 			this.logger = Logger.getLoggerInstance();
 			createServerSocket();
 			printLogMessage(className, "created server socket for clients on port " + this.TcpPort, LogLevel.IMPORTANT);
@@ -73,8 +66,9 @@ public class Server implements Runnable {
 			this.client = client;
 		}
 		catch(FileNotFoundException e)
-		{//TODO
-			printLogMessage(className, e);
+		{
+			e.printStackTrace();
+			System.out.println("could not get logger instance");
 		}
 	}
 
@@ -90,7 +84,7 @@ public class Server implements Runnable {
 		try 
 		{
 			while (!this.socket.isConnected())
-			{
+			{//TODO what happens when the client is connected - the publisher should return the socket, should check if the client is connected
 				this.socket = this.serverSocket.accept();	//wait for a client to connect				
 			}
 			this.client.StopSearching();
@@ -105,7 +99,7 @@ public class Server implements Runnable {
 			{
 				clientInput = in.readLine();
 				clientInputLength = clientInput.length();
-				if (clientInputLength > 1 && client.isConnected())
+				if (clientInputLength >= 1 && client.isConnected())
 				{//rx-on tx-on
 					//for safty, what happens when the remote client sends an empty string
 					//TODO make sure the end of line "\n" is part of the string, if not then change to 0

@@ -1,7 +1,5 @@
 import java.io.FileNotFoundException;
 
-
-// TODO: Auto-generated Javadoc
 /**
  * The Class Main.
  */
@@ -17,6 +15,7 @@ public class Main {
 		try
 		{
 			Logger logger = Logger.getLoggerInstance();
+			logger.logEnabled = false;
 			
 			Client client = new Client();
 			Thread clientThread = new Thread(client);
