@@ -11,7 +11,7 @@ public class ServerPublisher implements Runnable {
 	private DatagramSocket socket;	//the UDP datagram which will be transmitted until the server found a client 
 	
 	public static int UDP_PORT = 6000;
-	public static String BROADCAST_HOST = "132.72.255.255";
+	public static String BROADCAST_HOST = "132.72.255.255";//TODO find the correct address for broadcast publishing
 	
 	private static String className = "ServerPublisher";
 	
@@ -61,39 +61,52 @@ public class ServerPublisher implements Runnable {
 			
 			//assembly all the above properties to udp datagram 
 			DatagramPacket dp = new DatagramPacket(requestBytes, requestBytes.length, address, ServerPublisher.UDP_PORT);
-			this.logger.printLogMessage(className, "created UDP broadcast datagram");
+			printLogMessage(className, "created UDP broadcast datagram", LogLevel.NOTE);
 			//create socket for sending the datagram
 			this.socket = new DatagramSocket(ServerPublisher.UDP_PORT);
-			this.logger.printLogMessage(className, "created socket for sending request message");
+			printLogMessage(className, "created socket for sending request message", LogLevel.NOTE);
 			
 			while(this.server.isServerAvailable())
 			{
 				try
 				{//send UDP datagram request
 					this.socket.send(dp);
-					this.logger.printLogMessage(className, "sent request message");
+					printLogMessage(className, "sent request message", LogLevel.NOTE);
 					Thread.sleep(1000);
 				}
 				catch(InterruptedException e)
 				{//TODO
-					this.logger.printLogMessage(className, e);
+					printLogMessage(className, e);
 				}
 			}
 			
 		} catch (UnknownHostException e) 
 		{
-			// TODO Auto-generated catch block
-			this.logger.printLogMessage(className, e);
+			printLogMessage(className, e);
 		} catch (SocketException e)
-		{//TODO stop program or something
-			this.logger.printLogMessage(className, e);
+		{
+			printLogMessage(className, e);
 		} catch (IOException e)
-		{//TODO stop program or something
-			this.logger.printLogMessage(className, e);
-		}
-		
-
-
+		{
+			printLogMessage(className, e);
+		}		
 	}
+	
+	private void printLogMessage(String sender, String message, LogLevel level)
+	{
+		if (this.logger != null)
+		{
+			this.logger.printLogMessage(sender, message, level);
+		}
+	}
+	
+	private void printLogMessage(String sender, Exception e)
+	{
+		if (this.logger != null)
+		{
+			this.logger.printLogMessage(sender, e);
+		}
+	}
+
 
 }

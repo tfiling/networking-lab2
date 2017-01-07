@@ -12,12 +12,6 @@ public class Logger {
 	private PrintWriter logWriter;
 	private static Logger instance = null;
 	
-	public static enum LogLevel
-	{
-		NOTE,		
-		IMPORTANT,
-		ERROR		//for exceptions
-	}
 	
 	public static Logger getLoggerInstance(boolean logEnabled) throws FileNotFoundException
 	{
