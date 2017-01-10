@@ -162,24 +162,25 @@ public class ServerPublisher implements Runnable {
 
 
 	private void addPortToPacket(byte[] offerBuffer) {
-		byte[] port = new byte[2];
-		for (int i = 0; i < 2; i++) {
-			port[i] = (byte)(this.port >>> (i * 8));
-		}
-		offerBuffer[24] = port[0];
-		offerBuffer[25] = port[1];
+		short s = (short)this.port;
+		byte b1 = (byte)s;
+		byte b2 = (byte)((s >> 8) & 0xff);
+//		short A = (short) (this.port / 256);
+//		short B = (short) (this.port % 256);
+		offerBuffer[24] = b2;
+		offerBuffer[25] = b1;
 
 
 	}
 
 
 	private void addIpToPacket(byte[] offerBuffer) {
-		byte[] Ip = new byte[4];
-		Ip = this.ip.getBytes(StandardCharsets.UTF_8);
-		offerBuffer[20] = Ip[0];
-		offerBuffer[21] = Ip[1];
-		offerBuffer[22] = Ip[2];
-		offerBuffer[23] = Ip[3];
+		String[] parts = this.ip.split("\\.");
+		
+		offerBuffer[20] = parts[0];				
+		offerBuffer[21] =  Byte.valueOf(parts[1]);
+		offerBuffer[22] =  Byte.valueOf(parts[2]);
+		offerBuffer[23] =  Byte.valueOf(parts[3]);
 	}
 
 
