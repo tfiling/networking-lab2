@@ -67,7 +67,8 @@ public class ServerPublisher implements Runnable {
         }
         catch( Exception ex )
         {
-        	printLogMessage(className, "Problem creating socket on port: " + this.port, LogLevel.NOTE);
+        	printLogMessage(this.className, ex);
+        	printLogMessage(className, "Problem creating socket on port: " + this.port, LogLevel.ERROR);
             
         }
 		//allocate the byte array for request message
@@ -82,6 +83,10 @@ public class ServerPublisher implements Runnable {
                 socket.receive (requestDP);
                 printLogMessage(className, "Received request massage from: " + requestDP.getAddress () + ":" +
                 		requestDP.getPort (), LogLevel.IMPORTANT);
+                if (!requestIsValid(requestDP))
+                {
+                	continue;
+                }
                 byte[] offerPacket = new byte[this.offerPacketSize];
                 copyFirst20Bytes(requestDP.getData(), offerPacket);
                 addIpToPacket(offerPacket);

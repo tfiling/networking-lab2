@@ -64,7 +64,7 @@ public class Client implements Runnable {
 		this.isServerConnected = false;
 		// should initilize the client Ip
 		//just for now:
-		this.myIp = "185.3.147.187";
+		this.myIp = "185.3.147.187";//yarden create function that detects the ip and converts it into valid string
 		
 		try
 		{
@@ -185,7 +185,7 @@ public class Client implements Runnable {
 		byte[] bytes = {offerDP.getData()[20], offerDP.getData()[21], offerDP.getData()[22], offerDP.getData()[23]};
 		String str;
 		try {
-			str = new String(bytes, "UTF-8");
+			str = new String(bytes, "UTF-8");//yarden to string "a.b.c.d"
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
