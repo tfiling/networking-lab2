@@ -118,7 +118,13 @@ public class ServerPublisher implements Runnable {
 	}
 
 	private boolean requestIsValid(byte[] r) {
-		String data = r.toString();
+		//String data = r.toString();
+		StringBuilder str = new StringBuilder();
+		for (int i = 0; i < r.length; i++)
+		{
+			str.append((char)r[i]);
+		}
+		String data = str.toString(); 
 		if (data.contains("Networking17"))
 			return true;
 		else
