@@ -64,7 +64,16 @@ public class Client implements Runnable {
 		this.isServerConnected = false;
 		// should initilize the client Ip
 		//just for now:
-		this.myIp = "185.3.147.187";//yarden create function that detects the ip and converts it into valid string
+		try {
+			this.myIp = InetAddress.getLocalHost().getHostAddress();
+			printLogMessage(className, "Just get my PC Ip" + this.myIp, LogLevel.NOTE);
+			
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			printLogMessage(className, "Couldn't get my PC Ip", LogLevel.IMPORTANT);
+			
+		}//yarden create function that detects the ip and converts it into valid string
 		
 		try
 		{
@@ -130,9 +139,11 @@ public class Client implements Runnable {
 				try
 				{//wait for offer message
 					this.requestSocket.receive(offerDP);
-					//yarden make sure we read only offers and from other clients(ip)
+					while (isFromMySelf(offerDP.getAddress()))
+					{
+						this.requestSocket.receive(offerDP);
+					}
 						
-					
 				}
 				catch (SocketTimeoutException e)
 				{//connection offer message was not received within 1 sec
@@ -140,7 +151,7 @@ public class Client implements Runnable {
 					continue;//send another connection request message
 				}
 				//checks its another PC	
-				if(!isFromMySelf(offerDP.getAddress())){
+				
 					int port = parsePort(offerDP);
 					String serverAddress = parseAddress(offerDP);
 					if (port >= 6000 && port <= 7000 && serverAddress != null)
@@ -155,7 +166,7 @@ public class Client implements Runnable {
 						printLogMessage(this.className, "Found a server, stop looking for one", LogLevel.IMPORTANT);
 						continue;
 					}
-				}
+				
 				//TODO code can be added here
 			}
 			while (!this.isServerConnected)
@@ -184,13 +195,7 @@ public class Client implements Runnable {
 	private String parseAddress(DatagramPacket offerDP) {
 		byte[] bytes = {offerDP.getData()[20], offerDP.getData()[21], offerDP.getData()[22], offerDP.getData()[23]};
 		String str;
-		try {
-			str = new String(bytes, "UTF-8");//yarden to string "a.b.c.d"
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			str = null; // ??
-		} 
+		str = (char)bytes[0] + "." + (char)bytes[1] + "." + (char)bytes[2] + "." +(char)bytes[3]; 
 		return str;
 	}
 	/**
@@ -284,6 +289,8 @@ public class Client implements Runnable {
 	
 	public boolean isFromMySelf(InetAddress address) {
 	    String rawAddress = address.toString();
+	    int idx = rawAddress.indexOf('/');
+	    rawAddress = rawAddress.substring(idx + 1, rawAddress.length());
 	    if(rawAddress.equals(this.myIp)) return true;
 	    else return false;
 	}

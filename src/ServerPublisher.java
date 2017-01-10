@@ -43,7 +43,17 @@ public class ServerPublisher implements Runnable {
 	public ServerPublisher(int serverPort)
 	{
 		this.port = serverPort;
-		this.ip = "185.3.147.187";
+		try {
+			this.ip = this.ip = InetAddress.getLocalHost().getHostAddress();
+			printLogMessage(className, "Just get my PC Ip" + this.ip, LogLevel.NOTE);
+			
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			printLogMessage(className, "Couldn't get my PC Ip", LogLevel.IMPORTANT);
+			
+		}
+		
 		
 		try
 		{
@@ -83,7 +93,7 @@ public class ServerPublisher implements Runnable {
                 socket.receive (requestDP);
                 printLogMessage(className, "Received request massage from: " + requestDP.getAddress () + ":" +
                 		requestDP.getPort (), LogLevel.IMPORTANT);
-                if (!requestIsValid(requestDP))
+                if (!requestIsValid(requestDP.getData()))
                 {
                 	continue;
                 }
@@ -105,6 +115,14 @@ public class ServerPublisher implements Runnable {
             }
         }
 		
+	}
+
+	private boolean requestIsValid(byte[] r) {
+		String data = r.toString();
+		if (data.contains("Networking17"))
+			return true;
+		else
+			return false;
 	}
 
 	private void copyFirst20Bytes(byte[] requestData, byte[] offerBuffer) {
