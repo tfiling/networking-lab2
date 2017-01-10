@@ -44,7 +44,7 @@ public class Client implements Runnable {
 	private Socket serverSocket;
 	
 	/** The publishing udp socket. */
-	private DatagramSocket publishingUdpSocket;  //we didnt used it.....
+	//private DatagramSocket publishingUdpSocket;  //we didnt used it.....
 	
 	/** sends the message to the server. */
 	private PrintWriter out;
@@ -56,14 +56,14 @@ public class Client implements Runnable {
 
 	/**
 	 * Instantiates a new client.
+	 * @param socket 
 	 */
-	public Client()
+	public Client(DatagramSocket socket)
 	{
 		this.isConnected = false;
 		this.keepRunning = true;
 		this.isServerConnected = false;
-		// should initilize the client Ip
-		//just for now:
+		this.requestSocket = socket;
 		try {
 			this.myIp = InetAddress.getLocalHost().getHostAddress();
 			printLogMessage(className, "Just get my PC Ip" + this.myIp, LogLevel.NOTE);
@@ -97,7 +97,7 @@ public class Client implements Runnable {
 		try 
 		{
 			//the address instance of the broadcast address
-			InetAddress address = InetAddress.getByName(ServerPublisher.BROADCAST_HOST);
+			InetAddress address = InetAddress.getByName(BROADCAST_HOST);
 			String request = "Networking17----";			
 			byte[] temp = request.getBytes();
 			//allocate the byte array which will be sent as the udp datagram's data
@@ -115,15 +115,12 @@ public class Client implements Runnable {
 			requestBytes[17] = randomIntegerBytes[1];
 			requestBytes[18] = randomIntegerBytes[2];
 			requestBytes[19] = randomIntegerBytes[3];
-
+			
 			//assembly all the above properties to udp datagram 
 			DatagramPacket requestDP = new DatagramPacket(requestBytes, requestBytes.length, address, ServerPublisher.UDP_PORT);
 			printLogMessage(className, "created UDP broadcast datagram", LogLevel.NOTE);
 			
 			//create socket for sending the datagram
-			this.requestSocket = new DatagramSocket(ServerPublisher.UDP_PORT);
-			this.requestSocket.setBroadcast(true);
-			this.requestSocket.setSoTimeout(1000);	//set the timeout for 1 sec
 			printLogMessage(className, "created socket for sending request message", LogLevel.NOTE);
 
 			while(this.keepRunning)

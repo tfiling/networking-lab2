@@ -40,8 +40,9 @@ public class ServerPublisher implements Runnable {
 	 *
 	 * @param server the server
 	 */
-	public ServerPublisher(int serverPort)
+	public ServerPublisher(int serverPort, DatagramSocket socket)
 	{
+		this.socket = socket;
 		this.port = serverPort;
 		try {
 			this.ip = InetAddress.getLocalHost().getHostAddress();
@@ -71,22 +72,12 @@ public class ServerPublisher implements Runnable {
 	 */
 	@Override
 	public void run() {
-		try
-		{
-			this.socket = new DatagramSocket(this.port);
-			//this.socket.connect(UDP_PORT);
-		}
-		catch( Exception ex )
-		{
-			printLogMessage(this.className, ex);
-			printLogMessage(className, "Problem creating socket on port: " + this.port, LogLevel.ERROR);
-
-		}
 		//allocate the byte array for request message
 		byte[] requstPacket = new byte[requestPacketSize];
+		InetAddress address = null;
 		try
 		{
-			InetAddress address = InetAddress.getByName(BROADCAST_HOST);
+			 address = InetAddress.getByName(BROADCAST_HOST);
 		}
 		catch (Exception e)
 		{

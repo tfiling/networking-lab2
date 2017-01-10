@@ -54,7 +54,7 @@ public class Server implements Runnable {
 	 *
 	 * @param client the client
 	 */
-	public Server(Client client)
+	public Server(Client client, DatagramSocket socket)
 	{
 		try
 		{
@@ -62,7 +62,7 @@ public class Server implements Runnable {
 			this.logger = Logger.getLoggerInstance();
 			createServerSocket();
 			printLogMessage(className, "created server socket for clients on port " + this.TcpPort, LogLevel.IMPORTANT);
-			this.publisher = new ServerPublisher(this.TcpPort);
+			this.publisher = new ServerPublisher(this.TcpPort, socket);
 			this.client = client;
 		}
 		catch(FileNotFoundException e)
