@@ -101,11 +101,15 @@ public class ServerPublisher implements Runnable {
 				copyFirst20Bytes(requestDP.getData(), offerPacket);
 				addIpToPacket(offerPacket);
 				addPortToPacket(offerPacket);
-				DatagramPacket offerDP = new DatagramPacket(offerPacket, offerPacket.length);
+				DatagramPacket offerDP = new DatagramPacket(offerPacket, offerPacket.length, address, UDP_PORT);
 
 				printLogMessage(className, "Send offer massage to: " + requestDP.getAddress () + ":" +
 						requestDP.getPort (), LogLevel.IMPORTANT);
-				socket.send (offerDP);
+				if (!sameIP(offerDP))
+				socket.send(offerDP);
+			}
+			catch (SocketTimeoutException e){
+				printLogMessage(this.className, "Recieve socket timeout", LogLevel.NOTE);
 			}
 			catch (IOException ie)
 			{
@@ -116,6 +120,21 @@ public class ServerPublisher implements Runnable {
 		}
 
 	}
+	
+	private String parseAddress(DatagramPacket offerDP) {
+		byte[] bytes = {offerDP.getData()[20], offerDP.getData()[21], offerDP.getData()[22], offerDP.getData()[23]};
+		String str;
+		str = (char)bytes[0] + "." + (char)bytes[1] + "." + (char)bytes[2] + "." +(char)bytes[3]; 
+		return str;
+	}
+
+	private boolean sameIP(DatagramPacket offerDP) {
+		String str = parseAddress(offerDP);
+		if (this.ip.equals(str))
+		return false;
+		else
+			return true;
+	}
 
 	private boolean requestIsValid(byte[] r) {
 		//String data = r.toString();
@@ -125,7 +144,7 @@ public class ServerPublisher implements Runnable {
 			str.append((char)r[i]);
 		}
 		String data = str.toString(); 
-		if (data.contains("Networking17"))
+		if (data.contains("Networking17") && data.length() == requestPacketSize)
 			return true;
 		else
 			return false;
