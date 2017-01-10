@@ -1,11 +1,15 @@
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Random;
 import java.util.Scanner;
+
+import javax.swing.JOptionPane;
 
 /**
  * The Class Client.
@@ -168,9 +172,10 @@ public class Client implements Runnable {
 			}
 			while (!this.isServerConnected)
 			{
-				System.out.println("client module connected to a remote server\n you can send messages via console");
-				String inputUser = sc.nextLine();
-				this.sendMessage(inputUser);
+				printLogMessage(this.className, "client module connected to a remote server\n you can send messages via console", LogLevel.IMPORTANT);
+				//String inputUser = sc.nextLine();
+				
+				this.sendMessage(JOptionPane.showInputDialog("Enter input: "));
 			}
 			
 

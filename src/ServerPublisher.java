@@ -21,7 +21,7 @@ public class ServerPublisher implements Runnable {
 	public static int UDP_PORT = 6000;
 
 	/** The broadcast host. */
-	public static String BROADCAST_HOST = "255.255.255.255";//TODO find the correct address for broadcast publishing
+	public static String BROADCAST_HOST = "0.0.0.0";//TODO find the correct address for broadcast publishing
 
 	/** The class name. */
 	private static String className = "ServerPublisher";
@@ -92,8 +92,6 @@ public class ServerPublisher implements Runnable {
 			try
 			{
 				this.socket.receive (requestDP);
-				printLogMessage(className, "Received request massage from: " + requestDP.getAddress () + ":" +
-						requestDP.getPort (), LogLevel.IMPORTANT);
 				if (!requestIsValid(requestDP.getData()))
 				{
 					continue;
@@ -107,6 +105,10 @@ public class ServerPublisher implements Runnable {
 				if (!sameIP(offerDP))
 				{
 					socket.send(offerDP);
+					
+					printLogMessage(className, "Received request massage from: " + requestDP.getAddress () + ":" +
+							requestDP.getPort (), LogLevel.IMPORTANT);
+					
 					printLogMessage(className, "Send offer massage to: " + requestDP.getAddress () + ":" +
 							requestDP.getPort (), LogLevel.IMPORTANT);
 				}
