@@ -104,11 +104,11 @@ public class ServerPublisher implements Runnable {
 				addPortToPacket(offerPacket);
 				DatagramPacket offerDP = new DatagramPacket(offerPacket, offerPacket.length, address, UDP_PORT);
 
-				printLogMessage(className, "Send offer massage to: " + requestDP.getAddress () + ":" +
-						requestDP.getPort (), LogLevel.IMPORTANT);
 				if (!sameIP(offerDP))
 				{
 					socket.send(offerDP);
+					printLogMessage(className, "Send offer massage to: " + requestDP.getAddress () + ":" +
+							requestDP.getPort (), LogLevel.IMPORTANT);
 				}
 			}
 			catch (SocketTimeoutException e){
@@ -126,18 +126,16 @@ public class ServerPublisher implements Runnable {
 	}
 	
 	private String parseAddress(DatagramPacket offerDP) {
-		byte[] bytes = {offerDP.getData()[20], offerDP.getData()[21], offerDP.getData()[22], offerDP.getData()[23]};
-		String str;
-		str = bytes[0] + "." + bytes[1] + "." + bytes[2] + "." + bytes[3]; 
+		String str = String.format("%d.%d.%d.%d", (offerDP.getData()[20] & 0xFFL), (offerDP.getData()[21] & 0xFFL), (offerDP.getData()[22] & 0xFFL), (offerDP.getData()[23] & 0xFFL)); 
 		return str;
 	}
 
 	private boolean sameIP(DatagramPacket offerDP) {
 		String str = parseAddress(offerDP);
 		if (this.ip.equals(str))
-		return false;
-		else
 			return true;
+		else
+			return false;
 	}
 
 	private boolean requestIsValid(byte[] r) {
