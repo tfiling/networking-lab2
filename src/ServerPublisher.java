@@ -101,11 +101,15 @@ public class ServerPublisher implements Runnable {
 				copyFirst20Bytes(requestDP.getData(), offerPacket);
 				addIpToPacket(offerPacket);
 				addPortToPacket(offerPacket);
-				DatagramPacket offerDP = new DatagramPacket(offerPacket, offerPacket.length);
+				DatagramPacket offerDP = new DatagramPacket(offerPacket, offerPacket.length, address, UDP_PORT);
 
 				printLogMessage(className, "Send offer massage to: " + requestDP.getAddress () + ":" +
 						requestDP.getPort (), LogLevel.IMPORTANT);
 				socket.send (offerDP);
+			}
+			catch (SocketTimeoutException e)
+			{
+				printLogMessage(this.className, "received socket timeout", LogLevel.NOTE);
 			}
 			catch (IOException ie)
 			{
@@ -113,6 +117,7 @@ public class ServerPublisher implements Runnable {
 				printLogMessage(className, "Problem with sending offer massage to: " + requestDP.getAddress () + ":" +
 						requestDP.getPort (), LogLevel.IMPORTANT);
 			}
+			
 		}
 
 	}
@@ -125,7 +130,7 @@ public class ServerPublisher implements Runnable {
 			str.append((char)r[i]);
 		}
 		String data = str.toString(); 
-		if (data.contains("Networking17"))
+		if (data.contains("Networking17") && data.length() == requestPacketSize)
 			return true;
 		else
 			return false;
