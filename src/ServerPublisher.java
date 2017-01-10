@@ -111,10 +111,6 @@ public class ServerPublisher implements Runnable {
 			catch (SocketTimeoutException e){
 				printLogMessage(this.className, "Recieve socket timeout", LogLevel.NOTE);
 			}
-			catch (SocketTimeoutException e)
-			{
-				printLogMessage(this.className, "received socket timeout", LogLevel.NOTE);
-			}
 			catch (IOException ie)
 			{
 				ie.printStackTrace();
