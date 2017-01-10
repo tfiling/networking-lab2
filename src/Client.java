@@ -192,7 +192,7 @@ public class Client implements Runnable {
 	private String parseAddress(DatagramPacket offerDP) {
 		byte[] bytes = {offerDP.getData()[20], offerDP.getData()[21], offerDP.getData()[22], offerDP.getData()[23]};
 		String str;
-		str = (char)bytes[0] + "." + (char)bytes[1] + "." + (char)bytes[2] + "." +(char)bytes[3]; 
+		str = bytes[0] + "." + bytes[1] + "." + bytes[2] + "." +bytes[3]; 
 		return str;
 	}
 	/**
