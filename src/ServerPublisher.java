@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Formatter;
 import java.util.Random;
 
 /**
@@ -165,22 +166,25 @@ public class ServerPublisher implements Runnable {
 		short s = (short)this.port;
 		byte b1 = (byte)s;
 		byte b2 = (byte)((s >> 8) & 0xff);
-//		short A = (short) (this.port / 256);
-//		short B = (short) (this.port % 256);
 		offerBuffer[24] = b2;
 		offerBuffer[25] = b1;
-
-
 	}
 
 
 	private void addIpToPacket(byte[] offerBuffer) {
 		String[] parts = this.ip.split("\\.");
-		
-		offerBuffer[20] = parts[0];				
-		offerBuffer[21] =  Byte.valueOf(parts[1]);
-		offerBuffer[22] =  Byte.valueOf(parts[2]);
-		offerBuffer[23] =  Byte.valueOf(parts[3]);
+		for (int j = 0; j < 4; j++)
+		{
+			short total = 0;
+			for(int i = 0; i < parts[j].length(); i++)
+			{
+				total = (short) (total * 10);
+				char c = parts[j].charAt(i);
+				total =  (short) (total + (byte)(c - '0'));
+			}			
+			offerBuffer[20 + j] = (byte)total;				
+			
+		}
 	}
 
 
