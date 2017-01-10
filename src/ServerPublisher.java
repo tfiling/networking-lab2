@@ -73,7 +73,8 @@ public class ServerPublisher implements Runnable {
 	public void run() {
 		try
         {
-            socket = new DatagramSocket(this.port);
+            this.socket = new DatagramSocket(this.port);
+            this.socket.connect(InetAddress.getByName(BROADCAST_HOST), UDP_PORT);
         }
         catch( Exception ex )
         {
@@ -90,7 +91,7 @@ public class ServerPublisher implements Runnable {
         {
             try
             {
-                socket.receive (requestDP);
+                this.socket.receive (requestDP);
                 printLogMessage(className, "Received request massage from: " + requestDP.getAddress () + ":" +
                 		requestDP.getPort (), LogLevel.IMPORTANT);
                 if (!requestIsValid(requestDP.getData()))

@@ -25,7 +25,7 @@ public class Server implements Runnable {
 
 	/** The Tcp port the server listens on. */
 	//the member which will hold the port for the client tcp connections
-	private int TcpPort = 6000;
+	private int TcpPort = 6001;
 
 	//true when the server waits for a client connection. 
 	/** true when the server waits for a client connection. 
@@ -83,7 +83,7 @@ public class Server implements Runnable {
 		printLogMessage(this.className, "started publishing the server", LogLevel.IMPORTANT);
 		try 
 		{
-			while (!this.socket.isConnected())
+			while (this.socket == null || !this.socket.isConnected())
 			{//TODO what happens when the client is connected - the publisher should return the socket, should check if the client is connected
 				this.socket = this.serverSocket.accept();	//wait for a client to connect				
 			}
