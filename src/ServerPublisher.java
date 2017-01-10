@@ -105,7 +105,11 @@ public class ServerPublisher implements Runnable {
 
 				printLogMessage(className, "Send offer massage to: " + requestDP.getAddress () + ":" +
 						requestDP.getPort (), LogLevel.IMPORTANT);
-				socket.send (offerDP);
+				if (!sameIP(offerDP))
+				socket.send(offerDP);
+			}
+			catch (SocketTimeoutException e){
+				printLogMessage(this.className, "Recieve socket timeout", LogLevel.NOTE);
 			}
 			catch (SocketTimeoutException e)
 			{
@@ -120,6 +124,21 @@ public class ServerPublisher implements Runnable {
 			
 		}
 
+	}
+	
+	private String parseAddress(DatagramPacket offerDP) {
+		byte[] bytes = {offerDP.getData()[20], offerDP.getData()[21], offerDP.getData()[22], offerDP.getData()[23]};
+		String str;
+		str = (char)bytes[0] + "." + (char)bytes[1] + "." + (char)bytes[2] + "." +(char)bytes[3]; 
+		return str;
+	}
+
+	private boolean sameIP(DatagramPacket offerDP) {
+		String str = parseAddress(offerDP);
+		if (this.ip.equals(str))
+		return false;
+		else
+			return true;
 	}
 
 	private boolean requestIsValid(byte[] r) {
