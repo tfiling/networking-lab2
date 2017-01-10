@@ -1,10 +1,11 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Random;
-
+import java.util.Scanner;
 
 /**
  * The Class Client.
@@ -26,12 +27,15 @@ public class Client implements Runnable {
 	/** The offer packet size. */
 	public static final int offerPacketSize = 26;
 
-	/** indicates wheather the client is connected to a server. */
+	/** indicates whether the client is connected to a server. */
 	private boolean isConnected;
 	
 	/** indication weather the client should keep searching for a server. */
 	//false when the server found client or when the client found a server, otherwise true
 	private boolean keepRunning;
+	
+	/** indication whenever the server are listening to the client. */
+	private boolean isServerConnected;
 
 	/** The logger. */
 	private Logger logger;
@@ -40,13 +44,15 @@ public class Client implements Runnable {
 	private Socket serverSocket;
 	
 	/** The publishing udp socket. */
-	private DatagramSocket publishingUdpSocket;
+	private DatagramSocket publishingUdpSocket;  //we didnt used it.....
 	
 	/** sends the message to the server. */
 	private PrintWriter out;
 
 	/** The Constant className. */
 	public static final String className = "Client";
+	
+	private String myIp;
 
 	/**
 	 * Instantiates a new client.
@@ -55,6 +61,11 @@ public class Client implements Runnable {
 	{
 		this.isConnected = false;
 		this.keepRunning = true;
+		this.isServerConnected = false;
+		// should initilize the client Ip
+		//just for now:
+		this.myIp = "185.3.147.187";
+		
 		try
 		{
 			this.logger = Logger.getLoggerInstance(); 			
@@ -66,7 +77,7 @@ public class Client implements Runnable {
 		}	
 	}
 
-
+	Scanner sc = new Scanner(System.in);
 
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
@@ -99,6 +110,7 @@ public class Client implements Runnable {
 			//assembly all the above properties to udp datagram 
 			DatagramPacket requestDP = new DatagramPacket(requestBytes, requestBytes.length, address, ServerPublisher.UDP_PORT);
 			printLogMessage(className, "created UDP broadcast datagram", LogLevel.NOTE);
+			
 			//create socket for sending the datagram
 			this.requestSocket = new DatagramSocket(ServerPublisher.UDP_PORT);
 			this.requestSocket.setBroadcast(true);
@@ -117,28 +129,42 @@ public class Client implements Runnable {
 
 				try
 				{//wait for offer message
-					this.requestSocket.receive(offerDP);					
+					this.requestSocket.receive(offerDP);
+					//yarden make sure we read only offers and from other clients(ip)
+						
+					
 				}
 				catch (SocketTimeoutException e)
 				{//connection offer message was not received within 1 sec
 					printLogMessage(this.className, "did not receive any offer", LogLevel.NOTE);
 					continue;//send another connection request message
 				}
-				
-				int port = parsePort(offerDP);
-				String serverAddress = parseAddress(offerDP);
-				if (port >= 6000 && port <= 7000 && serverAddress != null)
-				{//if connection offer is valid - create the socket and writing channel
-					this.serverSocket = new Socket(serverAddress, port);
-					this.out = new PrintWriter(this.serverSocket.getOutputStream());
+				//checks its another PC	
+				if(!isFromMySelf(offerDP.getAddress())){
+					int port = parsePort(offerDP);
+					String serverAddress = parseAddress(offerDP);
+					if (port >= 6000 && port <= 7000 && serverAddress != null)
+					{//if connection offer is valid - create the socket and writing channel
+						this.serverSocket = new Socket(serverAddress, port);
+						this.out = new PrintWriter(this.serverSocket.getOutputStream());
+					}
+					if (this.serverSocket != null && this.out != null)
+					{//failed to create the server connection try sending another request
+						this.keepRunning = false;
+						this.isConnected = true;
+						printLogMessage(this.className, "Found a server, stop looking for one", LogLevel.IMPORTANT);
+						continue;
+					}
 				}
-				if (this.serverSocket != null && this.out != null)
-				{//failed to create the server connection try sending another request
-					this.keepRunning = false;
-					this.isConnected = true;
-					continue;
-				}
+				//TODO code can be added here
 			}
+			while (!this.isServerConnected)
+			{
+				System.out.println("client module connected to a remote server\n you can send messages via console");
+				String inputUser = sc.nextLine();
+				this.sendMessage(inputUser);
+			}
+			
 
 		} catch (UnknownHostException e) 
 		{
@@ -156,12 +182,17 @@ public class Client implements Runnable {
 	 * @return the string
 	 */
 	private String parseAddress(DatagramPacket offerDP) {
-		// TODO when server publisher ready
-		return null;
+		byte[] bytes = {offerDP.getData()[20], offerDP.getData()[21], offerDP.getData()[22], offerDP.getData()[23]};
+		String str;
+		try {
+			str = new String(bytes, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			str = null; // ??
+		} 
+		return str;
 	}
-
-
-
 	/**
 	 * Parses the port.
 	 *
@@ -169,8 +200,10 @@ public class Client implements Runnable {
 	 * @return the int
 	 */
 	private int parsePort(DatagramPacket offerDP) {
-		// TODO when server publisher ready
-		return -1;
+		byte[] arr = {offerDP.getData()[24], offerDP.getData()[25] };
+		ByteBuffer wrapped = ByteBuffer.wrap(arr); // big-endian by default
+		short num = wrapped.getShort(); 
+		return num;
 	}
 
 
@@ -184,7 +217,8 @@ public class Client implements Runnable {
 	{//TODO send message to the server you are connected to or to the console
 		if (!this.isConnected)
 		{
-			printLogMessage(this.className, "sendMessage was invoked but the client is not connected to the server", LogLevel.ERROR);
+			System.out.println(message);
+			printLogMessage(this.className, "printed message: " + message + " to console since not connected to remote server", LogLevel.NOTE);
 			return;
 		}
 		else if (this.out == null)
@@ -212,6 +246,11 @@ public class Client implements Runnable {
 	public void StopSearching() {
 		this.keepRunning = false;
 
+	}
+	
+	public void setServerConnected(boolean isServerConnected)
+	{
+		this.isServerConnected = isServerConnected;
 	}
 
 	/**
@@ -241,6 +280,12 @@ public class Client implements Runnable {
 		{
 			this.logger.printLogMessage(sender, e);
 		}
+	}
+	
+	public boolean isFromMySelf(InetAddress address) {
+	    String rawAddress = address.toString();
+	    if(rawAddress.equals(this.myIp)) return true;
+	    else return false;
 	}
 
 

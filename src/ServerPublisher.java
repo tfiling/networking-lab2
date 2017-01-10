@@ -2,6 +2,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 /**
@@ -9,9 +10,6 @@ import java.util.Random;
  */
 public class ServerPublisher implements Runnable {
 
-	/** The server. */
-	private Server server;			//the server which is being published	
-	
 	/** The logger. */
 	private Logger logger;			//the logger
 	
@@ -26,15 +24,27 @@ public class ServerPublisher implements Runnable {
 
 	/** The class name. */
 	private static String className = "ServerPublisher";
+	
+	/** The request packet size. */
+	public static final int requestPacketSize = 20;
+	
+	/** The offer packet size. */
+	public static final int offerPacketSize = 26;
+	
+	private int port;
+	
+	private String ip;
 
 	/**
 	 * Instantiates a new server publisher.
 	 *
 	 * @param server the server
 	 */
-	public ServerPublisher(Server server)
+	public ServerPublisher(int serverPort)
 	{
-		this.server = server;
+		this.port = serverPort;
+		this.ip = "185.3.147.187";
+		
 		try
 		{
 			this.logger = Logger.getLoggerInstance(); 			
@@ -45,17 +55,82 @@ public class ServerPublisher implements Runnable {
 			System.out.println("could not get logger instance");
 		}
 	}
-
-
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
 	public void run() {
-		//TODO
-		System.out.println();
+		try
+        {
+            socket = new DatagramSocket(this.port);
+        }
+        catch( Exception ex )
+        {
+        	printLogMessage(className, "Problem creating socket on port: " + this.port, LogLevel.NOTE);
+            
+        }
+		//allocate the byte array for request message
+		byte[] requstPacket = new byte[requestPacketSize];
+		DatagramPacket requestDP = new DatagramPacket(requstPacket, requstPacket.length);
+		printLogMessage(className, "allocate UDP broadcast datagram to get the request", LogLevel.NOTE);
 
+        while (true)
+        {
+            try
+            {
+                socket.receive (requestDP);
+                printLogMessage(className, "Received request massage from: " + requestDP.getAddress () + ":" +
+                		requestDP.getPort (), LogLevel.IMPORTANT);
+                byte[] offerPacket = new byte[this.offerPacketSize];
+                copyFirst20Bytes(requestDP.getData(), offerPacket);
+                addIpToPacket(offerPacket);
+                addPortToPacket(offerPacket);
+                DatagramPacket offerDP = new DatagramPacket(offerPacket, offerPacket.length);
+
+                printLogMessage(className, "Send offer massage to: " + requestDP.getAddress () + ":" +
+                		requestDP.getPort (), LogLevel.IMPORTANT);
+                socket.send (offerDP);
+            }
+            catch (IOException ie)
+            {
+                ie.printStackTrace();
+                printLogMessage(className, "Problem with sending offer massage to: " + requestDP.getAddress () + ":" +
+                		requestDP.getPort (), LogLevel.IMPORTANT);
+            }
+        }
+		
 	}
+
+	private void copyFirst20Bytes(byte[] requestData, byte[] offerBuffer) {
+		for (int i=0; i<20; i++){
+			offerBuffer[i]=requestData[i];
+		}
+		
+	}
+
+
+	private void addPortToPacket(byte[] offerBuffer) {
+		 byte[] port = new byte[2];
+		 for (int i = 0; i < 2; i++) {
+			 port[i] = (byte)(this.port >>> (i * 8));
+		 }
+		 offerBuffer[24] = port[0];
+		 offerBuffer[25] = port[1];
+			
+		 
+	}
+
+
+	private void addIpToPacket(byte[] offerBuffer) {
+		 byte[] Ip = new byte[4];
+		Ip = this.ip.getBytes(StandardCharsets.UTF_8);
+		offerBuffer[20] = Ip[0];
+		offerBuffer[21] = Ip[1];
+		offerBuffer[22] = Ip[2];
+		offerBuffer[23] = Ip[3];
+	}
+
 
 	/**
 	 * Prints the log message.

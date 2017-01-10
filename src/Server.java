@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Random;
-
+import java.util.Scanner;
 /**
  * The Class Server.
  */
@@ -62,7 +62,7 @@ public class Server implements Runnable {
 			this.logger = Logger.getLoggerInstance();
 			createServerSocket();
 			printLogMessage(className, "created server socket for clients on port " + this.TcpPort, LogLevel.IMPORTANT);
-			this.publisher = new ServerPublisher(this);
+			this.publisher = new ServerPublisher(this.TcpPort);
 			this.client = client;
 		}
 		catch(FileNotFoundException e)
@@ -88,6 +88,7 @@ public class Server implements Runnable {
 				this.socket = this.serverSocket.accept();	//wait for a client to connect				
 			}
 			this.client.StopSearching();
+			this.client.setServerConnected(true);
 			this.available = false;						//found a client, stop publishing the server
 			printLogMessage(this.className, "server found a remote client", LogLevel.IMPORTANT);
 
