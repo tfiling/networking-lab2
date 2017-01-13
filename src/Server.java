@@ -84,10 +84,11 @@ public class Server implements Runnable {
 		try 
 		{
 			while (this.socket == null || !this.socket.isConnected())
-			{//TODO what happens when the client is connected - the publisher should return the socket, should check if the client is connected
-				this.socket = this.serverSocket.accept();	//wait for a client to connect				
+			{
+				this.socket = this.serverSocket.accept();	//wait for a client to connect
 			}
 			this.client.StopSearching();
+
 			this.client.setServerConnected(true);
 			this.available = false;						//found a client, stop publishing the server
 			printLogMessage(this.className, "server found a remote client " + this.socket.getInetAddress().toString(), LogLevel.IMPORTANT);
@@ -99,11 +100,13 @@ public class Server implements Runnable {
 			while (true)
 			{
 				clientInput = in.readLine();
+				if (clientInput == null)
+				{
+					continue;
+				}
 				clientInputLength = clientInput.length();
 				if (clientInputLength >= 1 && client.isConnected())
 				{//rx-on tx-on
-					//for safty, what happens when the remote client sends an empty string
-					//TODO make sure the end of line "\n" is part of the string, if not then change to 0
 					newString = replaceRandomChar(clientInput, clientInputLength);
 					printLogMessage(this.className, "original client input - " + 
 							clientInput + 
@@ -172,7 +175,7 @@ public class Server implements Runnable {
 		{
 			this.serverSocket = null;
 			printLogMessage(className, "failed to find available port for tcp clinet connection", LogLevel.ERROR);
-			//TODO stop program
+			System.exit(0);
 		}
 	}
 

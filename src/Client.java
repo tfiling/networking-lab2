@@ -148,12 +148,11 @@ public class Client implements Runnable {
 				printLogMessage(className, "found an offer from remote server", LogLevel.IMPORTANT);
 					int port = parsePort(offerDP);
 					String serverAddress = parseAddress(offerDP);
-					if (port >= 6000 && port <= 7000 && serverAddress != null)
+					
+					if (port >= 6000 && port <= 7000 && serverAddress != null && this.keepRunning)
 					{//if connection offer is valid - create the socket and writing channel
 						this.serverSocket = new Socket(serverAddress, port);
-						this.out = new DataOutputStream(this.serverSocket.getOutputStream());
-						
-
+						this.out = new DataOutputStream(this.serverSocket.getOutputStream());	
 					}
 					if (this.serverSocket != null && this.out != null)
 					{//failed to create the server connection try sending another request
@@ -213,7 +212,7 @@ public class Client implements Runnable {
 	 * @param message the message that will be sent to the server
 	 */
 	public void sendMessage(String message)
-	{//TODO send message to the server you are connected to or to the console
+	{
 		if (!this.isConnected)
 		{
 			System.out.println(message);
