@@ -161,7 +161,7 @@ public class Client implements Runnable {
 					{//failed to create the server connection try sending another request
 						this.keepRunning = false;
 						this.isConnected = true;
-						printLogMessage(this.className, "Found a server, stop looking for one", LogLevel.IMPORTANT);
+						printLogMessage(this.className, "Found a server, stop looking for one. server address: " + this.serverSocket.getInetAddress().toString(), LogLevel.IMPORTANT);
 						continue;
 					}
 				
