@@ -1,10 +1,6 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.*;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Formatter;
-import java.util.Random;
 
 /**
  * The Class ServerPublisher.
@@ -79,7 +75,7 @@ public class ServerPublisher implements Runnable {
 		}
 		catch (Exception e)
 		{
-			printLogMessage(this.className, e);
+			printLogMessage(className, e);
 		}
 		DatagramPacket requestDP = new DatagramPacket(requstPacket, requstPacket.length, address, UDP_PORT);
 		printLogMessage(className, "allocate UDP broadcast datagram to get the request", LogLevel.IMPORTANT);
@@ -93,7 +89,7 @@ public class ServerPublisher implements Runnable {
 //				{
 //					continue;
 //				}
-				byte[] offerPacket = new byte[this.offerPacketSize];
+				byte[] offerPacket = new byte[offerPacketSize];
 				copyFirst20Bytes(requestDP.getData(), offerPacket);
 				addIpToPacket(offerPacket);
 				addPortToPacket(offerPacket);
@@ -111,7 +107,7 @@ public class ServerPublisher implements Runnable {
 				}
 			}
 			catch (SocketTimeoutException e){
-				printLogMessage(this.className, "Recieve socket timeout", LogLevel.NOTE);
+				printLogMessage(className, "Recieve socket timeout", LogLevel.NOTE);
 			}
 			catch (IOException ie)
 			{
@@ -124,32 +120,6 @@ public class ServerPublisher implements Runnable {
 
 	}
 	
-	private String parseAddress(DatagramPacket offerDP) {
-		String str = String.format("%d.%d.%d.%d", (offerDP.getData()[20] & 0xFFL), (offerDP.getData()[21] & 0xFFL), (offerDP.getData()[22] & 0xFFL), (offerDP.getData()[23] & 0xFFL)); 
-		return str;
-	}
-
-	private boolean sameIP(DatagramPacket offerDP) {
-		String str = parseAddress(offerDP);
-		if (this.ip.equals(str))
-			return true;
-		else
-			return false;
-	}
-
-	private boolean requestIsValid(byte[] r) {
-		//String data = r.toString();
-		StringBuilder str = new StringBuilder();
-		for (int i = 0; i < r.length; i++)
-		{
-			str.append((char)r[i]);
-		}
-		String data = str.toString(); 
-		if (data.contains("Networking17") && data.length() == requestPacketSize)
-			return true;
-		else
-			return false;
-	}
 
 	private void copyFirst20Bytes(byte[] requestData, byte[] offerBuffer) {
 		for (int i=0; i<20; i++){

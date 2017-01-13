@@ -1,11 +1,9 @@
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Random;
-import java.util.Scanner;
 /**
  * The Class Server.
  */
@@ -80,7 +78,7 @@ public class Server implements Runnable {
 		Thread publisherthread = new Thread(this.publisher);
 		this.available = true;		//server is ready - make it available for the publisher to publish it
 		publisherthread.start();	//start publishing the server
-		printLogMessage(this.className, "started publishing the server", LogLevel.IMPORTANT);
+		printLogMessage(className, "started publishing the server", LogLevel.IMPORTANT);
 		try 
 		{
 			while (this.socket == null || !this.socket.isConnected())
@@ -91,12 +89,11 @@ public class Server implements Runnable {
 
 			this.client.setServerConnected(true);
 			this.available = false;						//found a client, stop publishing the server
-			printLogMessage(this.className, "server found a remote client " + this.socket.getInetAddress().toString(), LogLevel.IMPORTANT);
+			printLogMessage(className, "server found a remote client " + this.socket.getInetAddress().toString(), LogLevel.IMPORTANT);
 			this.publisher.stopPublishing();
 			BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 			String clientInput, newString;
-			int clientInputLength, replacedCharIndex;
-			char randomChar;
+			int clientInputLength;
 			while (true)
 			{
 				clientInput = in.readLine();
@@ -108,7 +105,7 @@ public class Server implements Runnable {
 				if (clientInputLength >= 1 && client.isConnected())
 				{//rx-on tx-on
 					newString = replaceRandomChar(clientInput, clientInputLength);
-					printLogMessage(this.className, "original client input - " + 
+					printLogMessage(className, "original client input - " + 
 							clientInput + 
 							" ,new string - " + newString, LogLevel.IMPORTANT);
 					this.client.sendMessage(newString);

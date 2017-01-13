@@ -1,10 +1,6 @@
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Random;
@@ -75,7 +71,7 @@ public class Client implements Runnable {
 			printLogMessage(className, "Just get my PC Ip" + this.myIp, LogLevel.IMPORTANT);
 			
 		} catch (UnknownHostException e1) {
-			printLogMessage(this.className, e1);
+			printLogMessage(className, e1);
 			printLogMessage(className, "Couldn't get my PC Ip", LogLevel.IMPORTANT);
 		}
 		catch(FileNotFoundException e)
@@ -140,7 +136,7 @@ public class Client implements Runnable {
 				}
 				catch (SocketTimeoutException e)
 				{//connection offer message was not received within 1 sec
-					printLogMessage(this.className, "did not receive any offer", LogLevel.NOTE);
+					printLogMessage(className, "did not receive any offer", LogLevel.NOTE);
 					continue;//send another connection request message
 				}
 				//checks its another PC	
@@ -158,14 +154,14 @@ public class Client implements Runnable {
 					{//failed to create the server connection try sending another request
 						this.keepRunning = false;
 						this.isConnected = true;
-						printLogMessage(this.className, "Found a server, stop looking for one. server address: " + this.serverSocket.getInetAddress().toString(), LogLevel.IMPORTANT);
+						printLogMessage(className, "Found a server, stop looking for one. server address: " + this.serverSocket.getInetAddress().toString(), LogLevel.IMPORTANT);
 						continue;
 					}
 				
 			}
 			while (!this.isServerConnected)
 			{
-				printLogMessage(this.className, "client module connected to a remote server\n you can send messages via console", LogLevel.IMPORTANT);
+				printLogMessage(className, "client module connected to a remote server\n you can send messages via console", LogLevel.IMPORTANT);
 				//String inputUser = sc.nextLine();
 				
 				this.sendMessage(JOptionPane.showInputDialog("Enter input: "));
@@ -216,18 +212,18 @@ public class Client implements Runnable {
 		if (!this.isConnected)
 		{
 			System.out.println(message);
-			printLogMessage(this.className, "printed message: " + message + " to console since not connected to remote server", LogLevel.NOTE);
+			printLogMessage(className, "printed message: " + message + " to console since not connected to remote server", LogLevel.NOTE);
 			return;
 		}
 		else if (this.out == null)
 		{
-			printLogMessage(this.className, "sendMessage was invoked but the client has not output stream via socket", LogLevel.ERROR);
+			printLogMessage(className, "sendMessage was invoked but the client has not output stream via socket", LogLevel.ERROR);
 			return;
 		}
 		try {
 			this.out.writeBytes(message + '\n');
 		} catch (IOException e) {
-			printLogMessage(this.className, e);
+			printLogMessage(className, e);
 			printLogMessage(className, "failed writing a message", LogLevel.ERROR);
 		}
 	}
