@@ -61,7 +61,7 @@ public class Logger {
 	{
 		String date = getCurrentTime();
 		//path of new log file: pwd(absolute path)\log\<date+time>.txt
-		String logName = Paths.get(".").toAbsolutePath().normalize().toString() + "\\log\\" + date + ".txt";
+		String logName = Paths.get(".").toAbsolutePath().normalize().toString() + "\\" + date + ".txt";
 		this.logWriter = new PrintWriter(new FileOutputStream(logName), true);
 	}
 	
@@ -80,8 +80,7 @@ public class Logger {
 		{
 		case NOTE:
 			stringLevel = "NOTE";
-			return;
-			//break;
+			break;
 		case IMPORTANT:
 			stringLevel = "IMPORTANT";
 			break;

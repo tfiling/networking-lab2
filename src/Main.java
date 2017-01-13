@@ -21,7 +21,7 @@ public class Main {
 		try
 		{
 			Logger logger = Logger.getLoggerInstance();
-			logger.logEnabled = false;
+			logger.logEnabled = true;
 			
 			try {
 				socket = new DatagramSocket(UDP_PORT);
