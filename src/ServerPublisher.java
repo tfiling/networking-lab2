@@ -48,7 +48,7 @@ public class ServerPublisher implements Runnable {
 		this.socket = socket;
 		this.port = serverPort;
 		try {
-			this.keepPublishing = true
+			this.keepPublishing = true;
 			this.logger = Logger.getLoggerInstance(); 			
 			this.ip = InetAddress.getLocalHost().getHostAddress();
 			printLogMessage(className, "Just get my PC Ip" + this.ip, LogLevel.NOTE);

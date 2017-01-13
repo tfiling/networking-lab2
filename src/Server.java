@@ -91,7 +91,7 @@ public class Server implements Runnable {
 			this.client.setServerConnected(true);
 			this.available = false;						//found a client, stop publishing the server
 			printLogMessage(this.className, "server found a remote client " + this.socket.getInetAddress().toString(), LogLevel.IMPORTANT);
-
+			this.publisher.stopPublishing();
 			BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 			String clientInput, newString;
 			int clientInputLength, replacedCharIndex;
