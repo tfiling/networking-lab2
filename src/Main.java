@@ -28,8 +28,7 @@ public class Main {
 				socket.setBroadcast(true);
 				socket.setSoTimeout(1000);
 			} catch (SocketException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.printLogMessage("main", e);
 			}
 			
 			Client client = new Client(socket);

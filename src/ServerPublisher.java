@@ -21,7 +21,7 @@ public class ServerPublisher implements Runnable {
 	public static int UDP_PORT = 6000;
 
 	/** The broadcast host. */
-	public static String BROADCAST_HOST = "0.0.0.0";//TODO find the correct address for broadcast publishing
+	public static String BROADCAST_HOST = "0.0.0.0";
 
 	/** The class name. */
 	private static String className = "ServerPublisher";
@@ -35,6 +35,8 @@ public class ServerPublisher implements Runnable {
 	private int port;
 
 	private String ip;
+	
+	private boolean keepPublishing;
 
 	/**
 	 * Instantiates a new server publisher.
@@ -46,13 +48,13 @@ public class ServerPublisher implements Runnable {
 		this.socket = socket;
 		this.port = serverPort;
 		try {
+			this.keepPublishing = true
 			this.logger = Logger.getLoggerInstance(); 			
 			this.ip = InetAddress.getLocalHost().getHostAddress();
 			printLogMessage(className, "Just get my PC Ip" + this.ip, LogLevel.NOTE);
 
 		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			printLogMessage(className, e1);
 			printLogMessage(className, "Couldn't get my PC Ip", LogLevel.IMPORTANT);
 
 		}
@@ -82,7 +84,7 @@ public class ServerPublisher implements Runnable {
 		DatagramPacket requestDP = new DatagramPacket(requstPacket, requstPacket.length, address, UDP_PORT);
 		printLogMessage(className, "allocate UDP broadcast datagram to get the request", LogLevel.IMPORTANT);
 
-		while (true)
+		while (keepPublishing)
 		{
 			try
 			{
@@ -180,6 +182,11 @@ public class ServerPublisher implements Runnable {
 			offerBuffer[20 + j] = (byte)total;				
 			
 		}
+	}
+	
+	public void stopPublishing()
+	{
+		this.keepPublishing = false;
 	}
 
 

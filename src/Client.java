@@ -24,7 +24,7 @@ public class Client implements Runnable {
 	public static int UDP_PORT = 6000;
 	
 	/** The broadcast host. */
-	public static String BROADCAST_HOST = "255.255.255.255";//TODO find the correct address for broadcast publishing
+	public static String BROADCAST_HOST = "255.255.255.255";
 	
 	/** The request packet size. */
 	public static final int requestPacketSize = 20;
@@ -75,8 +75,6 @@ public class Client implements Runnable {
 			printLogMessage(className, "Just get my PC Ip" + this.myIp, LogLevel.IMPORTANT);
 			
 		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 			printLogMessage(this.className, e1);
 			printLogMessage(className, "Couldn't get my PC Ip", LogLevel.IMPORTANT);
 		}
@@ -165,7 +163,6 @@ public class Client implements Runnable {
 						continue;
 					}
 				
-				//TODO code can be added here
 			}
 			while (!this.isServerConnected)
 			{
@@ -231,9 +228,8 @@ public class Client implements Runnable {
 		try {
 			this.out.writeBytes(message + '\n');
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			printLogMessage(this.className, e);
+			printLogMessage(className, "failed writing a message", LogLevel.ERROR);
 		}
 	}
 
