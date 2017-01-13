@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -51,7 +52,7 @@ public class Client implements Runnable {
 	//private DatagramSocket publishingUdpSocket;  //we didnt used it.....
 	
 	/** sends the message to the server. */
-	private PrintWriter out;
+	private DataOutputStream out;
 
 	/** The Constant className. */
 	public static final String className = "Client";
@@ -136,7 +137,7 @@ public class Client implements Runnable {
 						this.requestSocket.receive(offerDP);
 						printLogMessage(className, "received offer from " + offerDP.getAddress().getHostAddress(), LogLevel.IMPORTANT);
 					}
-					while (isFromMySelf(offerDP.getAddress()));
+					while (offerDP.getLength() == 20);
 						
 				}
 				catch (SocketTimeoutException e)
@@ -152,7 +153,9 @@ public class Client implements Runnable {
 					if (port >= 6000 && port <= 7000 && serverAddress != null)
 					{//if connection offer is valid - create the socket and writing channel
 						this.serverSocket = new Socket(serverAddress, port);
-						this.out = new PrintWriter(this.serverSocket.getOutputStream());
+						this.out = new DataOutputStream(this.serverSocket.getOutputStream());
+						
+
 					}
 					if (this.serverSocket != null && this.out != null)
 					{//failed to create the server connection try sending another request
@@ -225,7 +228,13 @@ public class Client implements Runnable {
 			printLogMessage(this.className, "sendMessage was invoked but the client has not output stream via socket", LogLevel.ERROR);
 			return;
 		}
-		this.out.print(message);
+		try {
+			this.out.writeBytes(message + '\n');
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			printLogMessage(this.className, e);
+		}
 	}
 
 	/**
