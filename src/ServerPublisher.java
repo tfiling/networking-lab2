@@ -46,6 +46,7 @@ public class ServerPublisher implements Runnable {
 		this.socket = socket;
 		this.port = serverPort;
 		try {
+			this.logger = Logger.getLoggerInstance(); 			
 			this.ip = InetAddress.getLocalHost().getHostAddress();
 			printLogMessage(className, "Just get my PC Ip" + this.ip, LogLevel.NOTE);
 
@@ -54,12 +55,6 @@ public class ServerPublisher implements Runnable {
 			e1.printStackTrace();
 			printLogMessage(className, "Couldn't get my PC Ip", LogLevel.IMPORTANT);
 
-		}
-
-
-		try
-		{
-			this.logger = Logger.getLoggerInstance(); 			
 		}
 		catch(FileNotFoundException e)
 		{//could not get a logger instance, the operation will not be fully logged
@@ -85,24 +80,24 @@ public class ServerPublisher implements Runnable {
 			printLogMessage(this.className, e);
 		}
 		DatagramPacket requestDP = new DatagramPacket(requstPacket, requstPacket.length, address, UDP_PORT);
-		printLogMessage(className, "allocate UDP broadcast datagram to get the request", LogLevel.NOTE);
+		printLogMessage(className, "allocate UDP broadcast datagram to get the request", LogLevel.IMPORTANT);
 
 		while (true)
 		{
 			try
 			{
 				this.socket.receive (requestDP);
-				if (!requestIsValid(requestDP.getData()))
-				{
-					continue;
-				}
+//				if (!requestIsValid(requestDP.getData()))
+//				{
+//					continue;
+//				}
 				byte[] offerPacket = new byte[this.offerPacketSize];
 				copyFirst20Bytes(requestDP.getData(), offerPacket);
 				addIpToPacket(offerPacket);
 				addPortToPacket(offerPacket);
-				DatagramPacket offerDP = new DatagramPacket(offerPacket, offerPacket.length, address, UDP_PORT);
+				DatagramPacket offerDP = new DatagramPacket(offerPacket, offerPacket.length, requestDP.getAddress(), UDP_PORT);
 
-				if (!sameIP(offerDP))
+				if (!requestDP.getAddress().getHostAddress().equals(this.ip))
 				{
 					socket.send(offerDP);
 					

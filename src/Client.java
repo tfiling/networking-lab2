@@ -69,19 +69,15 @@ public class Client implements Runnable {
 		this.isServerConnected = false;
 		this.requestSocket = socket;
 		try {
+			this.logger = Logger.getLoggerInstance(); 			
 			this.myIp = InetAddress.getLocalHost().getHostAddress();
-			printLogMessage(className, "Just get my PC Ip" + this.myIp, LogLevel.NOTE);
+			printLogMessage(className, "Just get my PC Ip" + this.myIp, LogLevel.IMPORTANT);
 			
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			printLogMessage(this.className, e1);
 			printLogMessage(className, "Couldn't get my PC Ip", LogLevel.IMPORTANT);
-			
-		}//yarden create function that detects the ip and converts it into valid string
-		
-		try
-		{
-			this.logger = Logger.getLoggerInstance(); 			
 		}
 		catch(FileNotFoundException e)
 		{//could not get a logger instance, the operation will not be fully logged
@@ -124,9 +120,6 @@ public class Client implements Runnable {
 			DatagramPacket requestDP = new DatagramPacket(requestBytes, requestBytes.length, address, ServerPublisher.UDP_PORT);
 			printLogMessage(className, "created UDP broadcast datagram", LogLevel.NOTE);
 			
-			//create socket for sending the datagram
-			printLogMessage(className, "created socket for sending request message", LogLevel.NOTE);
-
 			while(this.keepRunning)
 			{
 
@@ -139,11 +132,11 @@ public class Client implements Runnable {
 
 				try
 				{//wait for offer message
-					this.requestSocket.receive(offerDP);
-					while (isFromMySelf(offerDP.getAddress()))
-					{
+					do {
 						this.requestSocket.receive(offerDP);
+						printLogMessage(className, "received offer from " + offerDP.getAddress().getHostAddress(), LogLevel.IMPORTANT);
 					}
+					while (isFromMySelf(offerDP.getAddress()));
 						
 				}
 				catch (SocketTimeoutException e)
@@ -152,7 +145,8 @@ public class Client implements Runnable {
 					continue;//send another connection request message
 				}
 				//checks its another PC	
-				
+
+				printLogMessage(className, "found an offer from remote server", LogLevel.IMPORTANT);
 					int port = parsePort(offerDP);
 					String serverAddress = parseAddress(offerDP);
 					if (port >= 6000 && port <= 7000 && serverAddress != null)

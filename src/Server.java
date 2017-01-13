@@ -107,7 +107,7 @@ public class Server implements Runnable {
 					newString = replaceRandomChar(clientInput, clientInputLength);
 					printLogMessage(this.className, "original client input - " + 
 							clientInput + 
-							" ,new string - " + newString, LogLevel.NOTE);
+							" ,new string - " + newString, LogLevel.IMPORTANT);
 					this.client.sendMessage(newString);
 				}
 				else if (!client.isConnected())

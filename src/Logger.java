@@ -80,7 +80,8 @@ public class Logger {
 		{
 		case NOTE:
 			stringLevel = "NOTE";
-			break;
+			return;
+			//break;
 		case IMPORTANT:
 			stringLevel = "IMPORTANT";
 			break;
